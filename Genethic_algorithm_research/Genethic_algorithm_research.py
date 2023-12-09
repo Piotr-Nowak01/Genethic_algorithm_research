@@ -31,11 +31,17 @@ def CalculateDistance(Points, FirstIndex, SecondIndex):
     return math.sqrt(pow(Points[FirstIndex][0]-Points[SecondIndex][0],2)+pow(Points[FirstIndex][1]-Points[SecondIndex][1],2))
 def VisualizePath(Order,GraphTitle, XminRange=0,XmaxRange=100,YminRange=0,YmaxRange=100):
     margin=3
-    plt.xlim(Xminrange - margin, Xmaxrange + margin)
-    plt.ylim(Yminrange - margin, Ymaxrange + margin)
+    plt.xlim(XminRange - margin, XmaxRange + margin)
+    plt.ylim(YminRange - margin, YmaxRange + margin)
     plt.grid()
     x,y = zip(*Order)
     plt.plot(x,y,marker="o",markersize=5,markeredgecolor="black", markerfacecolor="black")
     plt.title(GraphTitle)
     plt.show()
-    
+
+Order = []
+Points = GeneratePoints()
+print(Points)
+for i in range(50):
+        Order.append((Points[i][0], Points[i][1]))
+VisualizePath(Order,"TEST")
