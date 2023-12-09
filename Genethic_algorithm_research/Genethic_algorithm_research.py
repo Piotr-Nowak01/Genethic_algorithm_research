@@ -71,7 +71,7 @@ def tournament_selection(Matrix,population,tournament_size=5):
     winner=participants[0]
     for participant in participants:
         if objective_function(Matrix,participant)<objective_function(Matrix,winner):
-            winner=participants
+            winner=participant
     return winner
 def selection(Matrix,population,number_of_parents,tournament_size=5):
     parents = []
@@ -82,8 +82,12 @@ def crossover(Matrix,parent):
     person_size=len(parent)
     crossover_point1=crossover_point2=0
     while crossover_point1==crossover_point2:
-        crossover_point1=np.random.randint(0,person_size)
-        crossover_point2=np.random.randint(0,person_size)
+        crossover_point1=np.random.randint(1,person_size-1)
+        crossover_point2=np.random.randint(1,person_size-1)
+    if crossover_point1>crossover_point2:
+        crossover_point1,crossover_point2=crossover_point2,crossover_point1  
+    
+    
     child = []
     PointsDone = []
     iter=crossover_point1-1
@@ -113,6 +117,8 @@ def crossover(Matrix,parent):
         child[iter]=pos
         PointsDone.append(pos)
         iter+=1
+    #print(child)
+    #input()
     return child
 def mutation(child,mutation_probability=25,mutation_type=1):
     mutate = np.random.randint(0,100)
@@ -129,35 +135,44 @@ def GeneticAlgorithm(Order,number_of_generations=1000,tournament_size=5,populati
     if population_size!=50:
         number_of_parents=population_size/2
     population=starting_population(Order,population_size)
-    best_individual=population[0]
+    best_individual1=best_individual=population[0]
     Matrix=Matrix_Distances(Order)
     for i in range(number_of_generations):
-        print(len(population))
-        parents=selection(Matrix,population,tournament_size,number_of_parents)
+        print("Working. Current generation: "+str(i+1))
+        parents=selection(Matrix,population,number_of_parents,tournament_size)
         childs=[]
         new_kids=[]
         for parent in parents:
-            childs.append=crossover(Matrix,parent)
+            childs.append(crossover(Matrix,parent))
         for child in childs:
             new_kids.append(mutation(child,mutation_probability,mutation_type))
         population=parents+new_kids
+        for individual in population:
+            if objective_function(Matrix,individual)<objective_function(Matrix,best_individual1):
+                best_individual1=individual 
     for individual in population:
         if objective_function(Matrix,individual)<objective_function(Matrix,best_individual):
             best_individual=individual
-    return best_individual
+    return (best_individual,best_individual1)
 #===========================
 Order = []
 Order1=[]
+Order2=[]
 Points = GeneratePoints()
 population = []
 for i in range(50):
         Order.append((Points[i][0], Points[i][1]))
         population.append(i)
 matrix=Matrix_Distances(Order)
-VisualizePath(Order,"Starting "+str(objective_function(matrix,population)))
 result=GeneticAlgorithm(Order)
+result1=result[0]
+result2=result[1]
 for i in range(len(Order)):
-    Order1.append(Order[result[i]])
-matrix=Matrix_Distances(Order)
-print(len(result))
-VisualizePath(Order1,"Final "+str(objective_function(matrix,result)))
+    Order1.append(Order[result1[i]])
+    Order2.append(Order[result2[i]])
+Order.append(Order[0])
+Order1.append(Order1[0])
+Order2.append(Order2[0])
+VisualizePath(Order,"Starting "+str(objective_function(matrix,population)))
+VisualizePath(Order1,"Final, last gen "+str(objective_function(matrix,result1)))
+VisualizePath(Order2,"Final, whole "+str(objective_function(matrix,result2)))
