@@ -154,25 +154,53 @@ def GeneticAlgorithm(Order,number_of_generations=1000,tournament_size=5,populati
         if objective_function(Matrix,individual)<objective_function(Matrix,best_individual):
             best_individual=individual
     return (best_individual,best_individual1)
+def NearestNeighbourAlgorithm(Order, starting_point=0):
+    matrix = Matrix_Distances(Order)
+    Done=1 
+    size=len(Order)
+    starting_order=[]
+    for i in range(size):
+        starting_order.append(i)
+    final_order =[]
+    final_order.append(starting_point)
+    currently_do=starting_point
+    while Done < size:
+        min = 999999
+        for point in starting_order:
+            if point not in final_order:
+                if matrix[currently_do][point]<min:
+                    pos=point
+                    min=matrix[currently_do][point]
+        final_order.append(pos)
+        Done+=1
+        currently_do=pos
+    return final_order
 #===========================
-Order = []
-Order1=[]
-Order2=[]
-Points = GeneratePoints()
-population = []
-for i in range(50):
-        Order.append((Points[i][0], Points[i][1]))
-        population.append(i)
-matrix=Matrix_Distances(Order)
-result=GeneticAlgorithm(Order)
-result1=result[0]
-result2=result[1]
-for i in range(len(Order)):
-    Order1.append(Order[result1[i]])
-    Order2.append(Order[result2[i]])
-Order.append(Order[0])
-Order1.append(Order1[0])
-Order2.append(Order2[0])
-VisualizePath(Order,"Starting "+str(objective_function(matrix,population)))
-VisualizePath(Order1,"Final, last gen "+str(objective_function(matrix,result1)))
-VisualizePath(Order2,"Final, whole "+str(objective_function(matrix,result2)))
+def testowanie():
+    Order = []
+    Order1=[]
+    Order2=[]
+    Order3=[]
+    Points = GeneratePoints()
+    population = []
+    for i in range(50):
+            Order.append((Points[i][0], Points[i][1]))
+            population.append(i)
+    matrix=Matrix_Distances(Order)
+    result=GeneticAlgorithm(Order)
+    result1=result[0]
+    result2=result[1]
+    result3=NearestNeighbourAlgorithm(Order)
+    for i in range(len(Order)):
+        Order1.append(Order[result1[i]])
+        Order2.append(Order[result2[i]])
+        Order3.append(Order[result3[i]])
+    Order.append(Order[0])
+    Order1.append(Order1[0])
+    Order2.append(Order2[0])
+    Order3.append(Order3[0])
+    VisualizePath(Order,"Starting "+str(objective_function(matrix,population)))
+    VisualizePath(Order1,"Final, last gen "+str(objective_function(matrix,result1)))
+    VisualizePath(Order2,"Final, whole "+str(objective_function(matrix,result2)))
+    VisualizePath(Order3,"Nearest Neighbour "+str(objective_function(matrix,result3)))
+testowanie()
